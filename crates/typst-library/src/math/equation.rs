@@ -7,13 +7,15 @@ use crate::diag::SourceResult;
 use crate::engine::Engine;
 use crate::foundations::{
     elem, Content, NativeElement, Packed, Show, ShowSet, Smart, StyleChain, Styles,
-    Synthesize,
+    Synthesize, TargetElem,
 };
+use crate::html::{math, HtmlAttr, HtmlElem};
 use crate::introspection::{Count, Counter, CounterUpdate, Locatable};
 use crate::layout::{
     AlignElem, Alignment, BlockElem, InlineElem, OuterHAlignment, SpecificAlignment,
     VAlignment,
 };
+use crate::math::html_math::html_show_equation;
 use crate::math::{MathSize, MathVariant};
 use crate::model::{Numbering, Outlinable, ParLine, Refable, Supplement};
 use crate::text::{FontFamily, FontList, FontWeight, LocalName, TextElem};
@@ -167,6 +169,14 @@ impl Synthesize for Packed<EquationElem> {
 
 impl Show for Packed<EquationElem> {
     fn show(&self, engine: &mut Engine, styles: StyleChain) -> SourceResult<Content> {
+        if TargetElem::target_in(styles).is_html() {
+            let disp = if self.block(styles) { "block" } else { "inline" };
+            dbg!(&self.body);
+            let elem = HtmlElem::new(math::math)
+                .with_attr(HtmlAttr::constant("display"), disp)
+                .with_body(Some(html_show_equation(&self.body, engine, styles)?));
+            return Ok(elem.pack().spanned(self.span()));
+        }
         if self.block(styles) {
             Ok(BlockElem::multi_layouter(
                 self.clone(),

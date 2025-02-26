@@ -11,6 +11,7 @@ mod op;
 mod root;
 mod style;
 mod underover;
+mod html_math;
 
 pub use self::accent::{Accent, AccentElem};
 pub use self::attach::*;

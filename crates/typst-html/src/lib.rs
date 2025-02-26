@@ -9,7 +9,7 @@ use typst_library::diag::{bail, warning, At, SourceResult};
 use typst_library::engine::{Engine, Route, Sink, Traced};
 use typst_library::foundations::{Content, StyleChain, Target, TargetElem};
 use typst_library::html::{
-    attr, tag, FrameElem, HtmlDocument, HtmlElem, HtmlElement, HtmlNode,
+    attr, tag, FrameElem, HtmlDocument, HtmlElem, HtmlElement, HtmlNode
 };
 use typst_library::introspection::{
     Introspector, Locator, LocatorLink, SplitLocator, TagElem,
@@ -251,6 +251,7 @@ fn handle(
         )?;
         output.push(HtmlNode::Frame(frame));
     } else {
+        dbg!(child);
         engine.sink.warn(warning!(
             child.span(),
             "{} was ignored during HTML export",

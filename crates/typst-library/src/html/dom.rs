@@ -350,6 +350,7 @@ pub mod charsets {
 pub mod tag {
     use super::HtmlTag;
 
+    #[macro_export]
     macro_rules! tags {
         ($($tag:ident)*) => {
             $(#[allow(non_upper_case_globals)]
@@ -497,6 +498,18 @@ pub mod tag {
         )
     }
 
+    /// Whether this is a self-closing foreign tag.
+    ///
+    /// A foreign tag is a tag from the MathML or the SVG namespace
+    /// <https://html.spec.whatwg.org/#foreign-elements>.
+    ///
+    /// We use this to determine whether a tag needs to be
+    /// terminated with `/ >` (foreign elements) instead of just `>`.
+    /// See <https://html.spec.whatwg.org/#start-tags>.
+    pub fn is_self_closing_foreign(tag: HtmlTag) -> bool {
+        super::math::is_self_closing(tag)
+    }
+
     /// Whether this is a tag containing raw text.
     pub fn is_raw(tag: HtmlTag) -> bool {
         matches!(tag, self::script | self::style)
@@ -626,6 +639,33 @@ pub mod tag {
                 | self::col
                 | self::colgroup
         )
+    }
+}
+
+pub mod math {
+    use crate::tags;
+
+    use super::HtmlTag;
+
+    tags! {
+        math
+        menclose
+        mfrac
+        mi
+        mmultiscripts
+        mn
+        mo
+        mover
+        mprescripts
+        mrow
+        msub
+        msup
+        mtext
+        munderover
+    }
+
+    pub fn is_self_closing(tag: HtmlTag) -> bool {
+        matches!(tag, self::mprescripts)
     }
 }
 
