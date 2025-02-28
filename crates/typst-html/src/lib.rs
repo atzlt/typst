@@ -9,12 +9,14 @@ use typst_library::diag::{bail, warning, At, SourceResult};
 use typst_library::engine::{Engine, Route, Sink, Traced};
 use typst_library::foundations::{Content, StyleChain, Target, TargetElem};
 use typst_library::html::{
-    attr, tag, FrameElem, HtmlDocument, HtmlElem, HtmlElement, HtmlNode
+    attr, tag, FrameElem, HtmlDocument, HtmlElem, HtmlElement, HtmlNode,
 };
 use typst_library::introspection::{
     Introspector, Locator, LocatorLink, SplitLocator, TagElem,
 };
-use typst_library::layout::{Abs, Axes, BlockBody, BlockElem, BoxElem, Region, Size};
+use typst_library::layout::{
+    Abs, Axes, BlockBody, BlockElem, BoxElem, Region, Size,
+};
 use typst_library::model::{DocumentInfo, ParElem};
 use typst_library::routines::{Arenas, FragmentKind, Pair, RealizationKind, Routines};
 use typst_library::text::{LinebreakElem, SmartQuoteElem, SpaceElem, TextElem};
@@ -250,7 +252,26 @@ fn handle(
             Region::new(Size::splat(Abs::inf()), Axes::splat(false)),
         )?;
         output.push(HtmlNode::Frame(frame));
-    } else {
+    }
+    /*else if let Some(elem) = child.to_packed::<InlineElem>() {
+        for item in
+            elem.layout(engine, locator.next(&elem.span()), styles, Size::zero())?
+        {
+            match item {
+                InlineItem::Space(space, weak) => {
+                    // collector.push_item(Item::Absolute(space, weak));
+                    dbg!("Writing space");
+                }
+                InlineItem::Frame(mut frame) => {
+                    // frame.modify(&FrameModifiers::get_in(styles));
+                    // apply_baseline_shift(&mut frame, styles);
+                    // collector.push_item(Item::Frame(frame));
+                    output.push(HtmlNode::Frame(frame))
+                }
+            }
+        }
+    }*/
+    else {
         dbg!(child);
         engine.sink.warn(warning!(
             child.span(),

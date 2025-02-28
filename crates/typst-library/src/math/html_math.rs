@@ -9,6 +9,7 @@ use typst_library::{
     },
     text::TextElem,
 };
+use unicode_math_class::MathClass;
 
 pub fn html_show_equation(
     elem: &Content,
@@ -58,7 +59,7 @@ pub fn html_show_equation(
             .pack()
             .spanned(elem.span()))
     } else if let Some(elem) = elem.to_packed::<SymbolElem>() {
-        let is_op = !(elem.text <= 'z' && elem.text >= 'a');
+        let is_op = unicode_math_class::class(elem.text) != Some(MathClass::Alphabetic);
         Ok(HtmlElem::new(if is_op { math::mo } else { math::mi })
             .with_body(Some(TextElem::new(elem.text.into()).into()))
             .pack()
